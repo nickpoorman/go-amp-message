@@ -20,14 +20,14 @@ msg := ampmessage.New(nil)
 fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
 // => <Bytes: 10>
 
-msg.Push(NewStringArg("foo"))
+msg.Push(ampmessage.NewStringArg("foo"))
 msg.PushString("bar") // convenience method for pushing a new StringArg
 msg.PushString("baz")
 fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
 // => <Bytes: 1300000005733a666f6f00000005733a62617200000005733a62617a>
 
 // json
-jsonObj, _ := NewJSONArg(map[string]string{"foo": "bar"})
+jsonObj, _ := ampmessage.NewJSONArg(map[string]string{"foo": "bar"})
 msg.Push(jsonObj)
 fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
 // => <Bytes: 1400000005733a666f6f00000005733a62617200000005733a62617a0000000f6a3a7b22666f6f223a22626172227d>
@@ -38,7 +38,7 @@ fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
 // => <Bytes: 1500000005733a666f6f00000005733a62617200000005733a62617a0000000f6a3a7b22666f6f223a22626172227d000000116a3a7b2270696e67223a22706f6e67227d>
 
 blob := []byte("beep")
-msg.Push(NewBlobArg(blob))
+msg.Push(ampmessage.NewBlobArg(blob))
 msg.PushBlob([]byte("boop")) // convenience method for pushing a new BlobArg
 fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
 // => <Bytes: 1700000005733a666f6f00000005733a62617200000005733a62617a0000000f6a3a7b22666f6f223a22626172227d000000116a3a7b2270696e67223a22706f6e67 ... >
@@ -47,13 +47,13 @@ fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
   Decoding a message:
 
 ```go
-msg := New(nil)
+msg := ampmessage.New(nil)
 
 msg.PushString("foo")
 msg.PushJSON(map[string]string{"hello": "world"})
 msg.PushBlob([]byte("hello"))
 
-other, _ := NewFromBytes(msg.ToBytes())
+other, _ := ampmessage.NewFromBytes(msg.ToBytes())
 
 fmt.Printf("%s\n", other.Shift())
 // => &foo
