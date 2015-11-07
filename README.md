@@ -67,17 +67,17 @@ fmt.Printf("%s\n", other.Shift())
 
 [Godoc](https://godoc.org/github.com/nickpoorman/go-amp-message)
 
-### Message
+### `ampmessage.New(nil)`
 
   Initialize an empty message.
 
-### Message(bytes)
+### `ampmessage.NewFromBytes(bytes)`
 
   Decode the `buffer` AMP message to populate the `Message`.
 
-### Message(args)
+### `ampmessage.New(args)`
 
-  Initialize a messeage populated with `args`.
+  Initialize a message populated with `args`.
 
 # License
 
