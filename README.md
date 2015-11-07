@@ -58,7 +58,7 @@ other, _ := ampmessage.NewFromBytes(msg.ToBytes())
 fmt.Printf("%s\n", other.Shift())
 // => &foo
 fmt.Printf("%s\n", other.Shift())
-// => &&{"hello":"world"}
+// => &{"hello":"world"}
 fmt.Printf("%s\n", other.Shift())
 // => &hello
 ```
