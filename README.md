@@ -2,6 +2,8 @@
 
   High level [AMP](https://github.com/nickpoorman/go-amp) `Message` implementation for manipulating, encoding and decoding AMP messages in Go.
 
+  [Godoc](https://godoc.org/github.com/nickpoorman/go-amp-message)
+
 ## Installation
 
 ```
