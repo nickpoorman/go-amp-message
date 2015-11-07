@@ -10,7 +10,7 @@ import (
 func TestAMPMessageEmpty(t *testing.T) {
 	// it should be an empty message
 	msg := New(nil)
-	buf := msg.ToBuffer()
+	buf := msg.ToBytes()
 
 	if want, have := 1, len(buf); want != have {
 		t.Errorf("Buffer should have a length of 1. want %#v, have %#v", want, have)
@@ -21,7 +21,7 @@ func TestAMPMessageArgs(t *testing.T) {
 	// it should add arguments
 	args := []Arg{NewStringArg("foo"), NewStringArg("bar"), NewStringArg("baz")}
 	msg := New(args)
-	buf := msg.ToBuffer()
+	buf := msg.ToBytes()
 
 	if want, have := 28, len(buf); want != have {
 		t.Errorf("Buffer should have a length of 28. want %#v, have %#v", want, have)
@@ -48,7 +48,7 @@ func TestAMPMessageBuffer(t *testing.T) {
 	blob := []byte("bar")
 	msg.Push(NewBlobArg(blob))
 
-	msg2, err := NewFromBytes(msg.ToBuffer())
+	msg2, err := NewFromBytes(msg.ToBytes())
 	if err != nil {
 		t.Error(err)
 	}
@@ -76,5 +76,57 @@ func TestAMPMessageBuffer(t *testing.T) {
 	if want, have := "bar", string(msg2.Args[2].Bytes()); want != have {
 		t.Errorf("want %#v, have %#v", want, have)
 	}
+}
 
+func TestExampleEncode(t *testing.T) {
+	msg := New(nil)
+
+	fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
+
+	// string
+	msg.Push(NewStringArg("foo"))
+	msg.PushString("bar") // convenience method for pushing a new StringArg
+	msg.PushString("baz")
+
+	fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
+
+	// json
+	jsonObj, err := NewJSONArg(map[string]string{"foo": "bar"})
+	if err != nil {
+		t.Error(err)
+	}
+	msg.Push(jsonObj)
+	fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
+
+	// convenience method for pushing a new JSONArg
+	if _, err := msg.PushJSON(map[string]string{"ping": "pong"}); err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
+
+	// blob
+	blob := []byte("beep")
+	msg.Push(NewBlobArg(blob))
+	msg.PushBlob([]byte("boop")) // convenience method for pushing a new BlobArg
+	fmt.Printf("<Bytes: %x>\n", msg.ToBytes())
+}
+
+func TestExampleDecode(t *testing.T) {
+	msg := New(nil)
+
+	msg.PushString("foo")
+	msg.PushJSON(map[string]string{"hello": "world"})
+	msg.PushBlob([]byte("hello"))
+
+	other, err := NewFromBytes(msg.ToBytes())
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Printf("%s\n", other.Shift())
+	// => &foo
+	fmt.Printf("%s\n", other.Shift())
+	// => &&{"hello":"world"}
+	fmt.Printf("%s\n", other.Shift())
+	// => &hello
 }

@@ -87,6 +87,25 @@ func (m *Message) Push(arg Arg) []Arg {
 	return m.Args
 }
 
+// PushBlob will push a BlobArg given a byte array onto the tail of a Message
+func (m *Message) PushBlob(b []byte) []Arg {
+	return m.Push(NewBlobArg(b))
+}
+
+// PushJSON will push a JSONArg given a string onto the tail of a Message
+func (m *Message) PushJSON(v interface{}) ([]Arg, error) {
+	json, err := NewJSONArg(v)
+	if err != nil {
+		return m.Args, err
+	}
+	return m.Push(json), nil
+}
+
+// PushString will push a StringArg given a string onto the tail of a Message
+func (m *Message) PushString(s string) []Arg {
+	return m.Push(NewStringArg(s))
+}
+
 // Pop an arg off the tail of a Message
 func (m *Message) Pop() Arg {
 	if len(m.Args) < 1 {
@@ -97,7 +116,7 @@ func (m *Message) Pop() Arg {
 	return x
 }
 
-// Shift an arg onto the head of a Message
+// Shift an arg off the head of a Message
 func (m *Message) Shift() Arg {
 	if len(m.Args) < 1 {
 		return nil
@@ -107,19 +126,38 @@ func (m *Message) Shift() Arg {
 	return x
 }
 
-// Unshift an arg off the head of a Message
+// Unshift an arg onto the head of a Message
 func (m *Message) Unshift(arg Arg) []Arg {
 	m.Args = append([]Arg{arg}, m.Args...)
 	return m.Args
 }
 
-// Inspect the Message
-func (m *Message) Inspect() string {
-	return fmt.Sprintf("<Message args=%d size=%d>", len(m.Args), len(m.ToBuffer()))
+// UnshiftBlob will unshift a BlobArg given a byte array onto the head of a Message
+func (m *Message) UnshiftBlob(b []byte) []Arg {
+	return m.Unshift(NewBlobArg(b))
 }
 
-// ToBuffer return an encoded AMP Message
-func (m *Message) ToBuffer() []byte {
+// UnshiftJSON will unshift a JSONArg given a string onto the head of a Message
+func (m *Message) UnshiftJSON(v interface{}) ([]Arg, error) {
+	json, err := NewJSONArg(v)
+	if err != nil {
+		return m.Args, err
+	}
+	return m.Unshift(json), nil
+}
+
+// UnshiftString will unshift a StringArg given a string onto the head of a Message
+func (m *Message) UnshiftString(s string) []Arg {
+	return m.Unshift(NewStringArg(s))
+}
+
+// Inspect the Message
+func (m *Message) Inspect() string {
+	return fmt.Sprintf("<Message args=%d size=%d>", len(m.Args), len(m.ToBytes()))
+}
+
+// ToBytes return an encoded AMP Message
+func (m *Message) ToBytes() []byte {
 	return encode(m.Args)
 }
 
